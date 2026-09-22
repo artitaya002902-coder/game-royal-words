@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>เกมคำราชาศัพท์ ม.6 — ภารกิจพิชิตวังหลวง</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,"Noto Sans Thai",sans-serif;background:linear-gradient(135deg,#eee7ff,#fff8e7);color:#281a48}
+.wrap{max-width:1000px;margin:auto;padding:20px}.card{background:#fffdf8;border:2px solid #c9a34e;border-radius:26px;box-shadow:0 12px 35px #3b216326;overflow:hidden}
+header{background:linear-gradient(120deg,#27134f,#57308b);color:#fff;padding:30px;text-align:center;border-bottom:4px solid #e3b94f}
+h1{margin:0;color:#ffd967;font-size:clamp(30px,6vw,52px)}header p{margin:8px 0 0;font-size:18px}
+main{padding:28px}.start,.result{text-align:center}.start h2{color:#5a318b}.btn{border:0;border-radius:15px;padding:14px 28px;background:#63349b;color:#fff;font-size:18px;font-weight:bold;cursor:pointer}.btn:hover{filter:brightness(1.08)}
+.info{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}.badge{background:#f5e9c8;border:1px solid #d7b968;border-radius:999px;padding:9px 16px;font-weight:bold}
+.progress{height:12px;background:#e8def5;border-radius:99px;margin:16px 0 25px;overflow:hidden}.bar{height:100%;width:0;background:#6b3fa0;transition:.3s}
+.question{font-size:25px;line-height:1.55;font-weight:bold;margin:22px 0}.answers{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ans{padding:16px;text-align:left;background:#fff;border:2px solid #b8a4db;border-radius:16px;cursor:pointer;font-size:18px;min-height:68px}.ans:hover{background:#f5effd}.ans.correct{background:#dff3df;border-color:#4b9b50}.ans.wrong{background:#ffe0e0;border-color:#c84c4c}.ans:disabled{cursor:default}
+.feedback{display:none;margin-top:18px;padding:16px;border-radius:15px;background:#f7efd9;line-height:1.7}#next{display:none;margin:18px auto 0}
+.score{font-size:58px;color:#63349b;font-weight:bold}.level{font-size:20px;font-weight:bold}.small{font-size:14px;color:#6d617d}
+@media(max-width:680px){main{padding:18px}.answers{grid-template-columns:1fr}.question{font-size:21px}}
+</style>
+</head>
+<body><div class="wrap"><div class="card">
+<header><h1>👑 เกมคำราชาศัพท์</h1><p>ภารกิจพิชิตวังหลวง • สำหรับนักเรียนชั้นมัธยมศึกษาปีที่ 6</p></header>
+<main>
+<section id="start" class="start"><h2>ท้าทายความรู้ภาษาไทย</h2>
+<p>ตอบคำถาม 30 ข้อ เพื่อทดสอบความเข้าใจเรื่องคำราชาศัพท์ ทั้งคำศัพท์และการนำไปใช้</p>
+<p><b>กติกา:</b> เลือกคำตอบที่ถูกที่สุด รับ 1 คะแนนต่อข้อ และดูเฉลยหลังตอบ</p>
+<button class="btn" onclick="startGame()">เริ่มเกม ▶</button></section>
+<section id="game" style="display:none">
+<div class="info"><span class="badge">ข้อ <b id="num">1</b> / 30</span><span class="badge">คะแนน <b id="score">0</b></span></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div id="question" class="question"></div><div id="answers" class="answers"></div>
+<div id="feedback" class="feedback"></div><button id="next" class="btn" onclick="nextQ()">ข้อถัดไป →</button>
+</section>
+<section id="result" class="result" style="display:none"><h2>🎉 จบภารกิจ!</h2><div class="score"><span id="final">0</span>/30</div><p id="msg" class="level"></p>
+<p>นำคะแนนไปใช้เป็นกิจกรรมทบทวนหรือแข่งขันในชั้นเรียนได้</p><button class="btn" onclick="restart()">เล่นอีกครั้ง 🔄</button></section>
+</main></div></div>
+<script>
+const qs=[{"q": "ข้อใดเป็นคำราชาศัพท์ของ “กิน”", "a": ["ฉัน", "บริโภค", "รับประทาน", "เสวย"], "c": 3, "e": "“เสวย” ใช้เป็นคำราชาศัพท์ หมายถึง กิน"}, {"q": "ข้อใดเป็นคำราชาศัพท์ของ “นอน”", "a": ["บรรทม", "นิทรา", "จำวัด", "ประทับ"], "c": 0, "e": "“บรรทม” หมายถึง นอน"}, {"q": "ข้อใดเป็นคำราชาศัพท์ของ “ไป”", "a": ["เสด็จ", "ดำเนิน", "ทรงไป", "พระราชดำเนิน"], "c": 0, "e": "“เสด็จ” ใช้หมายถึง ไป หรือมา ตามบริบท"}, {"q": "ข้อใดเป็นคำราชาศัพท์ของ “ดู”", "a": ["ชมพระเนตร", "พระเนตร", "ทอดพระเนตร", "ทรงดู"], "c": 2, "e": "“ทอดพระเนตร” หมายถึง ดูหรือมอง"}, {"q": "คำราชาศัพท์ของ “มือ” คือข้อใด", "a": ["พระบาท", "พระอุระ", "พระกร", "พระหัตถ์"], "c": 3, "e": "“พระหัตถ์” หมายถึง มือ"}, {"q": "คำราชาศัพท์ของ “เท้า” คือข้อใด", "a": ["พระหัตถ์", "พระชานุ", "พระบาท", "พระกร"], "c": 2, "e": "“พระบาท” หมายถึง เท้า"}, {"q": "คำราชาศัพท์ของ “ตา” คือข้อใด", "a": ["พระโอษฐ์", "พระกรรณ", "พระเนตร", "พระนาสิก"], "c": 2, "e": "“พระเนตร” หมายถึง ตา"}, {"q": "คำราชาศัพท์ของ “หู” คือข้อใด", "a": ["พระกรรณ", "พระศอ", "พระเนตร", "พระนาสิก"], "c": 0, "e": "“พระกรรณ” หมายถึง หู"}, {"q": "คำราชาศัพท์ของ “จมูก” คือข้อใด", "a": ["พระโอษฐ์", "พระนาสิก", "พระพักตร์", "พระศอ"], "c": 1, "e": "“พระนาสิก” หมายถึง จมูก"}, {"q": "คำราชาศัพท์ของ “ปาก” คือข้อใด", "a": ["พระทนต์", "พระพักตร์", "พระโอษฐ์", "พระนาสิก"], "c": 2, "e": "“พระโอษฐ์” หมายถึง ปาก"}, {"q": "คำราชาศัพท์ของ “ฟัน” คือข้อใด", "a": ["พระหนุ", "พระทนต์", "พระโอษฐ์", "พระชิวหา"], "c": 1, "e": "“พระทนต์” หมายถึง ฟัน"}, {"q": "คำราชาศัพท์ของ “ศีรษะ” คือข้อใด", "a": ["พระเกศา", "พระนลาฏ", "พระเศียร", "พระขนง"], "c": 2, "e": "“พระเศียร” หมายถึง ศีรษะ"}, {"q": "คำราชาศัพท์ของ “ผม” คือข้อใด", "a": ["พระเกศา", "พระมัสสุ", "พระเศียร", "พระขนง"], "c": 0, "e": "“พระเกศา” หมายถึง ผม"}, {"q": "คำราชาศัพท์ของ “หน้าผาก” คือข้อใด", "a": ["พระขนง", "พระปราง", "พระพักตร์", "พระนลาฏ"], "c": 3, "e": "“พระนลาฏ” หมายถึง หน้าผาก"}, {"q": "คำราชาศัพท์ของ “คิ้ว” คือข้อใด", "a": ["พระเนตร", "พระนลาฏ", "พระปราง", "พระขนง"], "c": 3, "e": "“พระขนง” หมายถึง คิ้ว"}, {"q": "คำราชาศัพท์ของ “แก้ม” คือข้อใด", "a": ["พระปราง", "พระหนุ", "พระนลาฏ", "พระกรรณ"], "c": 0, "e": "“พระปราง” หมายถึง แก้ม"}, {"q": "คำราชาศัพท์ของ “ใบหน้า” คือข้อใด", "a": ["พระพักตร์", "พระเศียร", "พระปราง", "พระโอษฐ์"], "c": 0, "e": "“พระพักตร์” หมายถึง ใบหน้า"}, {"q": "คำราชาศัพท์ของ “หัวใจ” คือข้อใด", "a": ["พระอุระ", "พระโลหิต", "พระวรกาย", "พระหทัย"], "c": 3, "e": "“พระหทัย” หมายถึง หัวใจ"}, {"q": "คำราชาศัพท์ของ “เสื้อผ้า/เครื่องแต่งกาย” คือข้อใด", "a": ["พระราชดำริ", "พระราชหัตถเลขา", "ฉลองพระองค์", "เครื่องเสวย"], "c": 2, "e": "“ฉลองพระองค์” หมายถึง เครื่องแต่งกาย"}, {"q": "คำราชาศัพท์ของ “บ้าน/ที่อยู่” เมื่อกล่าวถึงพระบรมวงศานุวงศ์โดยทั่วไป คือข้อใด", "a": ["บ้านหลวง", "ที่ประทับ", "เคหสถาน", "เรือนรับรอง"], "c": 1, "e": "“ที่ประทับ” หมายถึง สถานที่ที่ประทับอยู่"}, {"q": "คำราชาศัพท์ของ “พูด” คือข้อใด", "a": ["รับสั่ง", "บรรยาย", "ตรัส", "พระราชดำรัส"], "c": 2, "e": "“ตรัส” ใช้หมายถึง พูด สำหรับพระมหากษัตริย์และพระบรมวงศานุวงศ์"}, {"q": "คำราชาศัพท์ของ “ถาม” คือข้อใด", "a": ["มีพระราชปุจฉา", "ตรัสถาม", "รับสั่งถาม", "พระราชดำริ"], "c": 0, "e": "“มีพระราชปุจฉา” ใช้หมายถึง ถามในราชาศัพท์"}, {"q": "คำราชาศัพท์ของ “หัวเราะ” คือข้อใด", "a": ["ทรงพระสรวล", "แย้มพระโอษฐ์", "พระสรวล", "ทรงพระดำริ"], "c": 0, "e": "“ทรงพระสรวล” หมายถึง หัวเราะ"}, {"q": "คำราชาศัพท์ของ “ยิ้ม” คือข้อใด", "a": ["แย้มพระโอษฐ์", "ทรงพระสรวล", "ทรงพระดำเนิน", "พระราชดำริ"], "c": 0, "e": "“แย้มพระโอษฐ์” หมายถึง ยิ้ม"}, {"q": "คำราชาศัพท์ของ “เดิน” คือข้อใด", "a": ["พระราชดำเนิน", "ทรงพระดำเนิน", "เสด็จ", "ดำเนิน"], "c": 1, "e": "“ทรงพระดำเนิน” หมายถึง เดิน"}, {"q": "คำราชาศัพท์ของ “นั่ง” คือข้อใด", "a": ["ทรงพระดำเนิน", "ประทับ", "บรรทม", "เสด็จ"], "c": 1, "e": "“ประทับ” หมายถึง นั่งหรืออยู่ในที่ใดที่หนึ่งตามบริบท"}, {"q": "คำราชาศัพท์ของ “อาบน้ำ” คือข้อใด", "a": ["ทรงอาบน้ำ", "ชำระพระวรกาย", "สรงน้ำ", "สรงพระสนาน"], "c": 3, "e": "“สรงพระสนาน” หมายถึง อาบน้ำ"}, {"q": "คำราชาศัพท์ของ “แต่งตัว” คือข้อใด", "a": ["ทรงพระภูษา", "ทรงเครื่อง", "ฉลองพระองค์", "แต่งพระองค์"], "c": 1, "e": "“ทรงเครื่อง” ใช้หมายถึง แต่งตัว/แต่งพระองค์"}, {"q": "คำราชาศัพท์ของ “ป่วย” คือข้อใด", "a": ["ประชวร", "ทรงพระประชวร", "ไม่สบาย", "พระประชวร"], "c": 0, "e": "“ประชวร” หมายถึง ป่วย"}, {"q": "คำราชาศัพท์ของ “เสียชีวิต” สำหรับพระมหากษัตริย์ คือข้อใด", "a": ["สวรรคต", "สิ้นพระชนม์", "มรณภาพ", "ถึงแก่อสัญกรรม"], "c": 0, "e": "“สวรรคต” ใช้กับพระมหากษัตริย์และพระบรมราชินีตามหลักการใช้ราชาศัพท์"}];let i=0,score=0,locked=false;
+function startGame(){document.getElementById('start').style.display='none';document.getElementById('game').style.display='block';showQ();}
+function showQ(){locked=false;let x=qs[i];document.getElementById('num').textContent=i+1;document.getElementById('score').textContent=score;document.getElementById('bar').style.width=(i/30*100)+'%';document.getElementById('question').textContent=x.q;
+let box=document.getElementById('answers');box.innerHTML='';x.a.forEach((t,n)=>{let b=document.createElement('button');b.className='ans';b.textContent=String.fromCharCode(65+n)+'. '+t;b.onclick=()=>answer(n,b);box.appendChild(b);});
+document.getElementById('feedback').style.display='none';document.getElementById('next').style.display='none';}
+function answer(n,btn){if(locked)return;locked=true;let x=qs[i];document.querySelectorAll('.ans').forEach(b=>b.disabled=true);
+if(n===x.c){score++;btn.classList.add('correct');document.getElementById('feedback').innerHTML='✅ <b>ถูกต้อง!</b><br>'+x.e;}
+else{btn.classList.add('wrong');document.querySelectorAll('.ans')[x.c].classList.add('correct');document.getElementById('feedback').innerHTML='❌ <b>ยังไม่ถูก</b><br>คำตอบที่ถูกคือ <b>'+x.a[x.c]+'</b><br>'+x.e;}
+document.getElementById('feedback').style.display='block';document.getElementById('score').textContent=score;document.getElementById('next').style.display='block';}
+function nextQ(){i++;if(i>=qs.length)finish();else showQ();}
+function finish(){document.getElementById('game').style.display='none';document.getElementById('result').style.display='block';document.getElementById('final').textContent=score;
+let m=score>=27?'🏆 ระดับยอดเยี่ยม — เชี่ยวชาญคำราชาศัพท์':score>=23?'🌟 ระดับดีมาก — มีพื้นฐานแน่น':score>=18?'📚 ระดับดี — ทบทวนอีกเล็กน้อย':score>=15?'👍 ผ่าน — ฝึกเพิ่มเติมเพื่อความแม่นยำ':'💪 เริ่มต้นใหม่ได้เลย — ทบทวนคำศัพท์แล้วลองอีกครั้ง';
+document.getElementById('msg').textContent=m;}
+function restart(){i=0;score=0;document.getElementById('result').style.display='none';document.getElementById('game').style.display='block';showQ();}
+</script></body></html>
